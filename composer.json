@@ -1,5 +1,5 @@
 {
-    "name": "diegomel/apigility-consumer",
+    "name": "diegomel/client-consumer",
     "type": "library",
     "description": "Apigility Client API Service Consumer",
     "keywords": ["apigility", "zf2", "zf3", "expressive", "client", "consumer", "http", "oauth"],
