@@ -200,6 +200,10 @@ class ClientService implements ClientApiInterface
         $this->httpClient->setUri($this->apiHostUrl.$data['api-route-segment']);
         $this->httpClient->setMethod($data['form-request-method']);
 
+        if (!empty($data['get-data']) && $data['form-request-method'] === 'GET') {
+            $this->httpClient->setParameterGet($data['get-data']);
+        }
+ 
         try {
             $response = $this->httpClient->send();
         } catch (RuntimeException $e) {

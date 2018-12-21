@@ -117,6 +117,10 @@ class ClientAuthService implements ClientApiInterface
             $this->httpClient->setOptions(['timeout' => $timeout]);
         }
 
+        if (!empty($data['get-data']) && $data['form-request-method'] === 'GET') {
+            $this->httpClient->setParameterGet($data['get-data']);
+        }
+        
         try {
             $response = $this->httpClient->send();
         } catch (RuntimeException $e) {
