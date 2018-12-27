@@ -14,6 +14,16 @@ use Zend\Json\Json;
  */
 class ClientResult implements ResultInterface
 {
+    
+    /**
+     * How objects should be encoded: as arrays or as stdClass.
+     *
+     * TYPE_ARRAY is array, which also conveniently evaluates to a boolean true
+     * value, allowing it to be used with ext/json's functions.
+     */
+    public const TYPE_ARRAY  = 'ARRAY';
+    public const TYPE_OBJECT = 'OBJECT';
+
     /** @var  bool */
     public $success;
 
@@ -50,7 +60,7 @@ class ClientResult implements ResultInterface
      *
      * @return self
      */
-    public static function applyResult(string $result) : ResultInterface
+    public static function applyResult(string $result, $objectDecodeType) : ResultInterface
     {
         if (!empty(self::$messages)) {
             $resultArray['validation_messages'] = self::$messages;
@@ -62,7 +72,7 @@ class ClientResult implements ResultInterface
             // for handle some characters like "\\" in string
             Json::$useBuiltinEncoderDecoder = true;
             // decode
-            $resultArray = Json::decode($result, 1);
+            $resultBody = Json::decode($result, self::objectDecodeType($objectDecodeType));
         } catch (RuntimeException $e) {
             $resultArray['validation_messages'] = [
                 'http' => [
@@ -77,7 +87,7 @@ class ClientResult implements ResultInterface
             return static::fromFailure($resultArray);
         }
 
-        return static::fromSucceed($resultArray);
+        return static::fromSucceed($resultBody);
     }
 
     /**
@@ -87,7 +97,7 @@ class ClientResult implements ResultInterface
      *
      * @return self
      */
-    private static function fromSucceed(array $result) : self
+    private static function fromSucceed($result) : self
     {
         $self = new self();
         $self->success = true;
@@ -118,4 +128,16 @@ class ClientResult implements ResultInterface
 
         return $self;
     }
+    
+    /**
+     * object decode type (array or object)
+     * @param string $type
+     * @return number
+     */
+    private static function objectDecodeType($type)
+    {
+        return ($type === self::TYPE_ARRAY) ? Json::TYPE_ARRAY : Json::TYPE_OBJECT;
+    }
+    
+    
 }

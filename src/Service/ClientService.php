@@ -17,6 +17,9 @@ use Zend\Stdlib\ErrorHandler;
 
 class ClientService implements ClientApiInterface
 {
+
+    private $objectDecodeType = null;
+   
     /** @var string */
     private $apiHostUrl;
 
@@ -203,7 +206,13 @@ class ClientService implements ClientApiInterface
         if (!empty($data['get-data']) && $data['form-request-method'] === 'GET') {
             $this->httpClient->setParameterGet($data['get-data']);
         }
- 
+        // default //
+        $this->objectDecodeType = ClientResult::TYPE_ARRAY;
+        
+        if (!empty($data['objectDecodeType']) && strtoupper($data['objectDecodeType']) === ClientResult::TYPE_OBJECT) {
+            $this->objectDecodeType = ClientResult::TYPE_OBJECT;
+        }
+
         try {
             $response = $this->httpClient->send();
         } catch (RuntimeException $e) {
@@ -252,6 +261,6 @@ class ClientService implements ClientApiInterface
 
         ClientResult::$messages = $messages;
 
-        return ClientResult::applyResult($response->getBody());
+        return ClientResult::applyResult($response->getBody(), $this->objectDecodeType);
     }
 }
