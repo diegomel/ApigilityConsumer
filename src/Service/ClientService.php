@@ -17,7 +17,7 @@ use Zend\Stdlib\ErrorHandler;
 
 class ClientService implements ClientApiInterface
 {
-
+    /** @var string */
     private $objectDecodeType = null;
    
     /** @var string */
@@ -198,13 +198,20 @@ class ClientService implements ClientApiInterface
         if (null !== $timeout) {
             $this->httpClient->setOptions(['timeout' => $timeout]);
         }
+        // from route zend //
+        $route_constraint = null;
+        // si existe armo route + constraints //
+        if (isset($data['api-route-constraints']) && !empty($data['api-route-constraints'])) {
+            // constantes salida //
+            $route_constraint = '/'.join('/', urlencode($data['api-route-constraints']));
+        }
 
         $this->httpClient->setHeaders($headers);
-        $this->httpClient->setUri($this->apiHostUrl.$data['api-route-segment']);
+        $this->httpClient->setUri($this->apiHostUrl.$data['api-route-segment'].$route_constraint);
         $this->httpClient->setMethod($data['form-request-method']);
 
         if (!empty($data['get-data']) && $data['form-request-method'] === 'GET') {
-            $this->httpClient->setParameterGet($data['get-data']);
+            $this->httpClient->setParameterGet($data['get-data']);            
         }
         // default //
         $this->objectDecodeType = ClientResult::TYPE_ARRAY;
@@ -263,4 +270,7 @@ class ClientService implements ClientApiInterface
 
         return ClientResult::applyResult($response->getBody(), $this->objectDecodeType);
     }
+    
+  
+    
 }
