@@ -209,10 +209,16 @@ class ClientService implements ClientApiInterface
         $this->httpClient->setHeaders($headers);
         $this->httpClient->setUri($this->apiHostUrl.$data['api-route-segment'].$route_constraint);
         $this->httpClient->setMethod($data['form-request-method']);
-
+        
+        // seteo GET datos //
         if (!empty($data['get-data']) && $data['form-request-method'] === 'GET') {
             $this->httpClient->setParameterGet($data['get-data']);            
         }
+        // seteo POST datos //
+        if (!empty($data['post-data']) && $data['form-request-method'] === 'POST') {
+            $this->httpClient->setParameterPost($data['post-data']);
+        }
+ 
         // default //
         $this->objectDecodeType = ClientResult::TYPE_ARRAY;
         
