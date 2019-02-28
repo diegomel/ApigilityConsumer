@@ -198,6 +198,9 @@ class ClientService implements ClientApiInterface
         if (null !== $timeout) {
             $this->httpClient->setOptions(['timeout' => $timeout]);
         }
+        // seteo de no verificar SSL para socket (ver como hacer con CURL) //
+        $this->httpClient->setOptions(['sslverifypeer' => false]);
+        
         // from route zend //
         $route_constraint = null;
         // si existe armo route + constraints //
